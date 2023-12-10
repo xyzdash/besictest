@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>合計スコアと設定</title>
+  <style>
+    h1, p {
+      text-align: center;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>合計スコアと設定</h1>
+
+<form id="scoreForm">
+    <label>
+        <input type="checkbox" id="touhouKoumakyou" class="title" value="9" checked> 東方紅魔郷
+      </label>
+      <label>
+        <input type="checkbox" id="touhouYouyoumu" class="title" value="13" checked> 東方妖々夢
+      </label>
+      <label>
+        <input type="checkbox" id="touhouEiyashou" class="title"value="16" checked> 東方永夜抄
+      </label>
+      <label>
+        <input type="checkbox" id="touhouKaeizuka" class="title" value="15" checked> 東方花映塚
+      </label>
+      <label>
+        <input type="checkbox" id="touhouFuujinroku" class="title" value="9" checked> 東方風神録
+      </label>
+      <label>
+        <input type="checkbox" id="touhouChireiden" class="title" value="9" checked> 東方地霊殿
+      </label>
+      <label>
+        <input type="checkbox" id="touhouSeirensen" class="title" value="11" checked> 東方星蓮船
+      </label>
+      <label>
+        <input type="checkbox" id="touhouDoublespoiler" class="title" value="2" checked> ダブルスポイラー
+      </label>
+      <label>
+        <input type="checkbox" id="touhouShinreibou" class="title" value="12" checked> 東方神霊廟
+      </label>
+      <label>
+        <input type="checkbox" id="touhouKijinroku" class="title" value="12" checked> 東方輝針城
+      </label>
+      <label>
+        <input type="checkbox" id="touhouKongjuden" class="title" value="10" checked> 東方紺珠伝
+      </label>
+      <label>
+        <input type="checkbox" id="touhouTenkuushou" class="title" value="11" checked> 東方天空璋
+      </label>
+      <label>
+        <input type="checkbox" id="touhouNightmarediary" class="title" value="1" checked> 秘封ナイトメアダイアリー
+      </label>
+      <label>
+        <input type="checkbox" id="touhouKigyoujuu" class="title" value="10" checked> 東方鬼形獣
+      </label>
+      <label>
+        <input type="checkbox" id="touhouKouryuudou" class="title" value="12" checked> 東方虹龍洞
+      </label>
+      <label>
+        <input type="checkbox" id="touhouJuuouen" class="title" value="19" checked> 東方獣王園
+      </label>
+
+      <button type="button" onclick="selectAll()">全選択</button>
+      <button type="button" onclick="deselectAll()">全解除</button>
+
+  <label>
+    出題数:
+    <input type="number" id="questionCount" value="1" min="1" > //disabled>
+  </label>
+
+  <label>
+    <input type="checkbox" id="answerButtonSetting"> 解答ボタンあり
+  </label>
+
+  <label>
+    <input type="radio" name="duplicationSetting" id="duplicationOn"> 出題かぶり設定：あり
+  </label>
+
+  <label>
+    <input type="radio" name="duplicationSetting" id="duplicationOff" checked> 出題かぶり設定：なし
+  </label>
+
+  <label id="deleteOptionsLabel" style="display: block;">
+    <input type="checkbox" id="deleteOptions"> 選択肢削除
+  </label>
+
+</form>
+
+<button onclick="updateURL()">URLを更新</button>
+
+<script>
+  const scores = {
+    "touhouKoumakyou": 9,
+    "touhouYouyoumu": 13,
+    "touhouEiyashou": 16,
+    "touhouKaeizuka": 15,
+    "touhouFuujinroku": 9,
+    "touhouChireiden": 9,
+    "touhouSeirensen": 11,
+    "touhouDoublespoiler": 2,
+    "touhouShinreibou": 12,
+    "touhouKijinroku": 12,
+    "touhouKongjuden": 10,
+    "touhouTenkuushou": 11,
+    "touhouNightmarediary": 1,
+    "touhouKigyoujuu": 10,
+    "touhouKouryuudou": 12,
+    "touhouJuuouen": 19
+  };
+
+  const titlecheckboxes = document.querySelectorAll('.title');
+  const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+  const questionCountInput = document.getElementById('questionCount');
+  const answerButtonSetting = document.getElementById('answerButtonSetting');
+  const duplicationOn = document.getElementById('duplicationOn');
+  const duplicationOff = document.getElementById('duplicationOff');
+  const deleteOptions = document.getElementById('deleteOptions');
+  const deleteOptionsLabel = document.getElementById('deleteOptionsLabel');
+
+  questionCountInput.value = calculateTotalScore();
+  questionCountInput.max = calculateTotalScore();
+  
+  // updateURL();
+
+  questionCountInput.addEventListener('input', () => {
+    if (duplicationOff.checked) {
+      questionCountInput.max = calculateTotalScore();  
+    }else{
+      questionCountInput.max = '';
+    }
+    // questionCountInput.value = calculateTotalScore();
+  });
+
+  function selectAll() {
+    titlecheckboxes.forEach(titlecheckbox => {
+      titlecheckbox.checked = true;
+      if (duplicationOff.checked) {
+        questionCountInput.value = calculateTotalScore();
+      }
+    });
+  }
+
+  function deselectAll() {
+    titlecheckboxes.forEach(titlecheckbox => {
+      titlecheckbox.checked = false;
+      questionCountInput.value = calculateTotalScore();
+    });
+  }
+
+  titlecheckboxes.forEach(titlecheckbox => {
+    titlecheckbox.addEventListener('change', () => {
+      if (duplicationOff.checked) {
+        questionCountInput.value = calculateTotalScore();
+      }
+      // updateURL();
+    });
+  });
+
+  questionCountInput.addEventListener('input', () => {
+    // updateURL();
+  });
+
+  answerButtonSetting.addEventListener('change', () => {
+    // updateURL();
+  });
+
+  duplicationOn.addEventListener('change', () => {
+    questionCountInput.disabled = !duplicationOn.checked;
+    questionCountInput.max = '';
+    deleteOptionsLabel.style.display = duplicationOn.checked ? 'none' : 'block';
+
+    // 出題かぶり設定がONの場合、選択肢削除のチェックを外す
+    if (duplicationOn.checked) {
+      deleteOptions.checked = false;
+    }
+
+    // updateURL();
+  });
+
+  duplicationOff.addEventListener('change', () => {
+    if (calculateTotalScore() >= questionCountInput.value) {
+      questionCountInput.max = calculateTotalScore();
+      questionCountInput.value = calculateTotalScore();
+    }
+    // questionCountInput.disabled = duplicationOff.checked;
+    // questionCountInput.min = toString(parseInt(questionCountInput.value, 10));
+    deleteOptionsLabel.style.display = duplicationOff.checked ? 'block' : 'none';
+
+    // updateURL();
+  });
+
+  function calculateTotalScore() {
+    let totalScore = 0;
+    titlecheckboxes.forEach(titlecheckbox => {
+      if (titlecheckbox.checked) {
+        const gameName = titlecheckbox.id;
+        totalScore += scores[gameName];
+      }
+    });
+
+    return totalScore;
+  }
+
+  function updateURL() {
+    const binaryString = Array.from(titlecheckboxes).map(titlecheckbox => titlecheckbox.checked ? '1' : '0').join('');
+    const decimalNumber = parseInt(binaryString, 2);
+    // const questionCount = questionCountInput.value;
+
+    window.location.href = `result.html?Title=${decimalNumber.toString().padStart(16, '0')}&Num=${questionCountInput.value}&CheckAns=${answerButtonSetting.checked ? '1' : '0'}&Dup=${duplicationOff.checked ? '0' : '1'}&Del=${deleteOptions.checked ? '1' : '0'}`;
+    // window.history.replaceState({}, '', `?title=${decimalNumber.toString().padStart(16, '0')}&questionCount=${questionCount}`);
+  }
+</script>
+
+</body>
+</html>

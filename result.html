@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>合計スコアとチェック項目</title>
+  <style>
+    /* h1, p {
+      text-align: center;
+    } */
+    
+  </style>
+</head>
+<body>
+
+<h1>合計スコアとチェック項目</h1>
+
+<script>
+  // 各ゲームのスコアを格納するオブジェクト
+  const scores = {
+    "東方紅魔郷": 9, 
+    "東方妖々夢": 13, 
+    "東方永夜抄": 16,
+    "東方花映塚": 15, 
+    "東方風神録": 9, 
+    "東方地霊殿": 9, 
+    "東方星蓮船": 11, 
+    "ダブルスポイラー": 2, 
+    "東方神霊廟": 12, 
+    "東方輝針城": 12, 
+    "東方紺珠伝": 10, 
+    "東方天空璋": 11, 
+    "秘封ナイトメアダイアリー": 1, 
+    "東方鬼形獣": 10, 
+    "東方虹龍洞": 12, 
+    "東方獣王園": 19
+  };
+
+  // URLからパラメータを取得する関数
+  function getParameterByName(name, url) {
+    if (!url) url = window.location.href;
+    name = name.replace(/[\[\]]/g, "\\$&");
+    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+        results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, " "));
+  }
+  
+  // const numParam = urlParams.get('Num');
+  // const checkansParam = urlParams.get('CheckAns');
+  // const dupParam = urlParams.get('Dup');
+  // const delParam = urlParams.get('Del');
+
+  // パラメーターの状態を取得
+  const queryString = window.location.search;
+  const urlParams = new URLSearchParams(queryString);
+  const titleParam = urlParams.get('Title');
+  const binaryString = parseInt(titleParam, 10).toString(2).padStart(16, '0');
+  const checkedGames = Array.from(binaryString).map((bit, index) => bit === '1' ? Object.keys(scores)[index] : null).filter(Boolean);
+
+  // // 合計スコアを計算
+  // let totalScore = 0;
+  // checkedGames.forEach(game => {
+  //   totalScore += scores[game];
+  // });
+
+  // 出題数
+  var num = getParameterByName('Num');
+
+  // 解答ボタン設定
+  var checkansParam = getParameterByName('CheckAns');
+  var checkans = 'なし';
+  if (checkansParam == '1') {
+    checkans = 'あり';
+  }
+
+  // 出題かぶり設定
+  var dupParam = getParameterByName('Dup');
+  var dup = 'なし';
+  if (dupParam == '1') {
+    dup = 'あり';
+  }
+
+  // 結果を表示
+  document.write(`<p>出題範囲: ${checkedGames.join(', ')}</p>`);
+  document.write(`<p>出題数: ${num}</p>`);
+  document.write(`<p>解答ボタン: ${checkans}</p>`);
+  document.write(`<p>出題かぶり: ${dup}</p>`);
+  // 選択肢削除設定
+  var delParam = getParameterByName('Del');
+  if (delParam == '1') {
+    var del = 'あり';
+    document.write(`<p>選択肢削除: ${del}</p>`);
+  }
+</script>
+
+</body>
+</html>
